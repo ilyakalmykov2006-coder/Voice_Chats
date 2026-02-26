@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: VoiceChats API
+  version: 0.1.0
+servers:
+  - url: https://chat.example.com
+paths:
+  /api/auth/register:
+    post:
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, username, password]
+              properties:
+                email: { type: string, format: email }
+                username: { type: string }
+                password: { type: string }
+      responses:
+        '201': { description: Created }
+  /api/auth/login:
+    post:
+      summary: Login
+      responses:
+        '200': { description: Access and refresh tokens }
+  /api/auth/refresh:
+    post:
+      summary: Refresh access token
+      responses:
+        '200': { description: New access token }
+  /api/servers:
+    post:
+      security: [{ bearerAuth: [] }]
+      summary: Create server
+      responses:
+        '201': { description: Created }
+  /api/channels:
+    post:
+      security: [{ bearerAuth: [] }]
+      summary: Create channel
+      responses:
+        '201': { description: Created }
+  /api/messages:
+    post:
+      security: [{ bearerAuth: [] }]
+      summary: Create message
+      responses:
+        '201': { description: Created }
+  /api/messages/{channelId}:
+    get:
+      security: [{ bearerAuth: [] }]
+      summary: List channel messages
+      parameters:
+        - in: path
+          name: channelId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: List of messages }
+  /api/friends/request:
+    post:
+      security: [{ bearerAuth: [] }]
+      summary: Send friend request
+      responses:
+        '201': { description: Request sent }
+  /api/friends/accept:
+    post:
+      security: [{ bearerAuth: [] }]
+      summary: Accept friend request
+      responses:
+        '200': { description: Accepted }
+  /api/media/turn-credentials:
+    get:
+      security: [{ bearerAuth: [] }]
+      summary: Get short-lived TURN credentials
+      responses:
+        '200': { description: TURN credentials }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

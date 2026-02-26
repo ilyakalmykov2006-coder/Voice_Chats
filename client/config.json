@@ -1,0 +1,9 @@
+{
+  "apiBaseUrl": "https://chat.example.com/api",
+  "wsBaseUrl": "wss://chat.example.com/socket.io",
+  "fallbackStun": ["stun:stun.l.google.com:19302"],
+  "rtc": {
+    "p2pEnabled": true,
+    "sfuMode": "mediasoup"
+  }
+}
