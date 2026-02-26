@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: vc_nginx
+    ports:
+      - '443:443'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - node-app
+    restart: unless-stopped
+
+  node-app:
+    image: node:22-alpine
+    container_name: vc_node_app
+    working_dir: /app
+    command: sh -c "npm ci && npm run start"
+    env_file:
+      - ./.env
+    volumes:
+      - ../server:/app
+    expose:
+      - '3000'
+    restart: unless-stopped
+
+  coturn:
+    image: coturn/coturn:4.6
+    container_name: vc_coturn
+    network_mode: host
+    volumes:
+      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+      - ./coturn/certs:/etc/coturn/certs:ro
+    command: -c /etc/coturn/turnserver.conf
+    restart: unless-stopped
+
+  # mediasoup обычно запускается внутри node-app.
+  # При выделении в отдельный сервис можно добавить отдельный контейнер/процесс
+  # с пробросом UDP диапазона для RTP.
